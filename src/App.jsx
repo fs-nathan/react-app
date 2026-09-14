@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
-import Timer from "./Timer";
-import Game from "./game/Game";
+import Store from "./cart/Store";
 
 function App() {
-  return <Game />;
+  return <Store />;
 }
 
 export default App;
