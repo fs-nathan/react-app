@@ -1,7 +1,7 @@
-import ExpenseTracker from "./expense-tracker/ExpenseTracker";
+import Store from "./cart/Store";
 
 function App() {
-  return <ExpenseTracker />;
+  return <Store />;
 }
 
 export default App;

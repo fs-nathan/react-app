@@ -1,4 +1,9 @@
-function Product({ product, onAddToCart }) {
+import React, { useEffect } from "react";
+
+function Product({ product, onFavoriteClick }) {
+  useEffect(() => {
+    console.log("Product component rendered", product);
+  }, [product]);
   return (
     <div
       style={{
@@ -30,12 +35,12 @@ function Product({ product, onAddToCart }) {
           borderRadius: "5px",
           cursor: "pointer",
         }}
-        onClick={() => onAddToCart(product)}
+        onClick={() => onFavoriteClick(product.id)}
       >
-        Add to cart
+        {product.isFavorite ? "Remove from favorites" : "Add to favorites"}
       </button>
     </div>
   );
 }
 
-export default Product;
+export default Product; //= React.memo(Product);

@@ -1,64 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Cart from "./Cart";
 import ProductList from "./ProductList";
 
 const DEFAULT_PRODUCTS = [
-  { id: 1, name: "Áo phông trắng", price: 100000 },
-  { id: 2, name: "Áo phông xanh", price: 200000 },
-  { id: 3, name: "Áo phông đen", price: 300000 },
-  { id: 4, name: "Áo phông tím", price: 400000 },
-  { id: 5, name: "Áo phông vàng", price: 500000 },
+  { id: 1, name: "iPhone 17", price: 25000000, category: "Phone" },
+  { id: 2, name: "MacBook Air", price: 30000000, category: "Laptop" },
+  { id: 3, name: "AirPods Pro", price: 6500000, category: "Audio" },
+  { id: 4, name: "Samsung Galaxy", price: 22000000, category: "Phone" },
+  { id: 5, name: "Dell XPS", price: 28000000, category: "Laptop" },
+  { id: 6, name: "Sony WH-1000XM6", price: 9000000, category: "Audio" },
 ];
 
-/**
- * [
- * {
- *  id: 1,
- *  name: "Áo phông trắng",
- *  price: 100000,
- *  quantity: 1,
- * }
- * ]
- *
- */
+const CATEGORIES = [
+  { id: 0, name: "All" },
+  { id: 1, name: "Phone" },
+  { id: 2, name: "Laptop" },
+  { id: 3, name: "Audio" },
+];
 
 function Store() {
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [products, setProducts] = useState(DEFAULT_PRODUCTS);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState(0);
+  const [price, setPrice] = useState("");
 
-  const handleAddToCart = (product) => {
-    // kiem tra xem product da co trong cart hay chua
-    if (selectedProducts.find((item) => item.id === product.id)) {
-      setSelectedProducts(
-        selectedProducts.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        ),
-      );
-    } else {
-      setSelectedProducts([...selectedProducts, { ...product, quantity: 1 }]);
-    }
-  };
-
-  const handleReduceQuantity = (product) => {
-    const foundProduct = selectedProducts.find(
-      (item) => item.id === product.id,
+  const handleAddFavorite = useCallback((productId) => {
+    setProducts((prev) =>
+      prev.map((item) =>
+        item.id === productId
+          ? { ...item, isFavorite: !item.isFavorite }
+          : item,
+      ),
     );
+  }, []);
 
-    if (foundProduct.quantity === 1) {
-      setSelectedProducts(
-        selectedProducts.filter((item) => item.id !== product.id),
-      );
-    } else {
-      setSelectedProducts(
-        selectedProducts.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item,
-        ),
+  useEffect(() => {
+    if (!search && !category && !price) {
+      setProducts(DEFAULT_PRODUCTS);
+      return;
+    }
+
+    let filteredProducts = [...DEFAULT_PRODUCTS];
+    if (search) {
+      filteredProducts = filteredProducts.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()),
       );
     }
-  };
+
+    if (category && category !== "All") {
+      filteredProducts = filteredProducts.filter(
+        (item) => item.category === category,
+      );
+    }
+
+    if (price) {
+      filteredProducts = filteredProducts.filter((item) => item.price >= price);
+    }
+
+    setProducts(filteredProducts);
+  }, [search, price, category]);
 
   return (
     <div
@@ -69,12 +69,65 @@ function Store() {
         flexDirection: "row",
       }}
     >
-      <ProductList products={DEFAULT_PRODUCTS} onAddToCart={handleAddToCart} />
-      <Cart
-        products={selectedProducts}
-        onReduceQuantity={handleReduceQuantity}
-        onAddToCart={handleAddToCart}
-      />
+      <div style={{ flex: 1, border: "1px solid white" }}>
+        <ProductList products={products} onAddFavorite={handleAddFavorite} />
+      </div>
+
+      {/* filters */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+        }}
+      >
+        {/* search input */}
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            padding: "10px",
+            border: "1px solid #ccc",
+            height: "40px",
+            fontSize: "20px",
+          }}
+          placeholder="Search products"
+        />
+
+        {/* category filter */}
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          style={{
+            padding: "10px",
+            border: "1px solid #ccc",
+            height: "56px",
+            fontSize: "20px",
+          }}
+        >
+          {CATEGORIES.map((item) => (
+            <option key={item.id} value={item.name}>
+              {item.name}
+            </option>
+          ))}
+        </select>
+
+        {/* filter by price > 25000000 */}
+        <input
+          type="number"
+          name="price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="Tìm theo sản phẩm lớn hơn mức giá"
+          style={{
+            padding: "10px",
+            border: "1px solid #ccc",
+            height: "40px",
+            fontSize: "20px",
+          }}
+        />
+      </div>
     </div>
   );
 }

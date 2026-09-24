@@ -1,12 +1,16 @@
 import Product from "./Product";
 
-function ProductList({ products, onAddToCart }) {
+function ProductList({ products, onAddFavorite }) {
   return (
-    <div style={{ width: "50%", border: "1px solid white" }}>
+    <>
       {products.map((product) => (
-        <Product key={product.id} product={product} onAddToCart={onAddToCart} />
+        <Product
+          key={product.id}
+          product={product}
+          onFavoriteClick={onAddFavorite}
+        />
       ))}
-    </div>
+    </>
   );
 }
 
