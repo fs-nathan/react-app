@@ -1,7 +1,7 @@
-import Store from "./cart/Store";
+import TrackerApp from "./task-tracker/TrackerApp";
 
 function App() {
-  return <Store />;
+  return <TrackerApp />;
 }
 
 export default App;
